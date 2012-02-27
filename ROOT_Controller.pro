@@ -4,7 +4,8 @@
 #
 #-------------------------------------------------
 
-QT       += core
+QT       += core \
+    sql
 
 QT       -= gui
 
@@ -18,10 +19,13 @@ TEMPLATE = app
 SOURCES += main.cpp \
     DB_Operation.cpp \
     controllerdaemon.cpp \
-    connectionprocess.cpp \
-    confighelper.cpp
+    connectionprocess.cpp
 
 HEADERS += \
     controllerdaemon.h \
     connectionprocess.h \
-    confighelper.h
+    DB_Operation.h
+
+OTHER_FILES += \
+    ../ROOT_Controller-build-desktop/apex.ini \
+    create_tables.sql

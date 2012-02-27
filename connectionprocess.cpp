@@ -27,16 +27,7 @@ ConnectionProcess::ConnectionProcess(QQueue <QString> *reqQ,QSemaphore *sem)
     connect(snint,SIGNAL(activated(int)),this,SLOT(handleSigInt()));
 
     QString key;
-    //TODO get from config
-    /*key=QString::fromAscii("123456789");
-    //shm = new QSharedMemory(key);
 
-    if(!shm->create(sizeof(QQueue <QString>)))
-    {
-        //qDebug<<"Error Creating SHM";
-        terminate();
-    }
-*/
     cout<<"Started Connection Process !!\n";
 }
 void ConnectionProcess::run()
@@ -71,9 +62,11 @@ void ConnectionProcess::run()
 
         //Disable Termination of Thread while handling a request
         this->setTerminationEnabled(false);
-        char request[256];
+        //char request[256];
+        int request;
         recv(connectFd,&request,sizeof(request),0);
 
+        //request[strlen(request)-1]='\0';
         cout<<"Req id is: "<<request<<"\n";
 
         //Write to Queue in shm
@@ -81,7 +74,7 @@ void ConnectionProcess::run()
         //shm->lock();
         //cout<<"Locked..!!";
         //requQueue =(QQueue <QString> *)shm->data();
-        QString reqId(request);
+        QString reqId = QString::number(request);
         reqQueue->enqueue(reqId);
         semEmpty->release();
         //shm->unlock();

@@ -5,6 +5,9 @@
 #include <QQueue>
 #include <QProcess>
 #include <QSemaphore>
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlError>
+#include <QFile>
 
 class ControllerDaemon:public QThread
 {
@@ -22,6 +25,8 @@ private:
     QProcess *root;
     QQueue <QString> *reqQueue;
     QSemaphore *semEmpty;
+    QSqlDatabase db;
+    QFile *op_file;
 };
 
 #endif // CONTROLLERDAEMON_H
