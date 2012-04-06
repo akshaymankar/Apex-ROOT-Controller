@@ -62,10 +62,10 @@ void ControllerDaemon::run()
         }
 
         //TODO: Do it with Configuration, i.e. QSettings
-        QString ROOT_path("/home/swap/root/bin/root");
+        //QString ROOT_path("/home/swap/root/bin/root");
 
         //Get input script
-        QString exe_file_query="select file,op_type from template "
+        QString exe_file_query="select exefile,op_type from template "
                 "where template_id=(select template_id from output where output_id='"+reqID+"')";
 
 
@@ -86,17 +86,25 @@ void ControllerDaemon::run()
          * TODO: Get script base directory from settings
          */
         QString exe_dir="/home/akshay/work/codes/faltu/root/";
+        //QString exe_dir="/home/tifr-viit/Apex/";
         cout<<"Executing\n";
 
         //Create File
         /*
-         * TODO: Find a better way to print output
+         * TODO: Find op_file_path from Settings
          */
-        QString op_file_path="/var/www/Apex/output/";
-        op_file = new QFile(op_file_path+reqID);
+        QString op_file_path="/var/www/Apex/output/dynamic/"+reqID+"/";
+        if(!(new QDir("/"))->mkpath(op_file_path)){
+            cout<<"Error Occured while creating Output directory..!!";
+            continue;
+        }
+
+        op_file = new QFile(op_file_path+"op.txt");
         op_file->open(QFile::ReadWrite);
 
         cout<<"Executing: "<<QString(exe_dir+exe_filename).toAscii().data()<<endl;
+
+        root->setWorkingDirectory(op_file_path);
         root->start(exe_dir+exe_filename,params);
 //        root->start(ROOT_path,QStringList() << "-l"<<"-b"<<script_dir+script_filename);
 
@@ -120,12 +128,17 @@ void ControllerDaemon::run()
         /*
          * TODO: Handle Timed out requests
          */
+        cout<<"Exit code is: "<<root->exitCode()<<endl;
+        QString op_status="READY";
+        if(root->exitCode()!=0){
+            op_status="FAILED";
+        }
 
         delete root;
         delete op_file;
         QString query;
 
-        query+="update output set op_ready=1 where output_id='"+reqID+"'";
+        query="update output set op_state='"+op_status+"' where output_id='"+reqID+"'";
         QSqlQuery *update_op = new QSqlQuery(db);
         if(!update_op->exec(query))
         {
@@ -133,7 +146,10 @@ void ControllerDaemon::run()
             cout<<"Query ="<<query.toAscii().data()<<endl;
             continue;
         }
-        cout<<"Successfully Completed Request\n";
+        if(op_status=="READY")
+            cout<<"Successfully Completed Request\n";
+        else
+            cout<<"Request Failed\n";
     }
 }
 void ControllerDaemon::terminate()

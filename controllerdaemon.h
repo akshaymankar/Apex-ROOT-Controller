@@ -8,6 +8,7 @@
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlError>
 #include <QFile>
+#include <QDir>
 
 class ControllerDaemon:public QThread
 {
