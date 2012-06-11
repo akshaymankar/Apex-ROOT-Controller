@@ -27,5 +27,4 @@ HEADERS += \
     DB_Operation.h
 
 OTHER_FILES += \
-    ../ROOT_Controller-build-desktop/apex.ini \
     create_tables.sql

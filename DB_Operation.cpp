@@ -5,17 +5,17 @@ using namespace std;
 
 QSqlDatabase getMySqlDB()
 {
-    QSettings settings("apex.ini",QSettings::IniFormat);
+    QSettings dbSettings("db.ini",QSettings::IniFormat);
 
-    if(settings.status()==QSettings::FormatError)
+    if(dbSettings.status()==QSettings::FormatError)
         cout<<"Format Error Occured..!!\n";
 
     //Read Settings
-    QString host(settings.value("host","localhost").toString());
-    QString user(settings.value("user","root").toString());
-    QString password(settings.value("password","").toString());
-    QString database(settings.value("database_name","apex").toString());
-    int port(settings.value("port",3306).toInt());
+    QString host(dbSettings.value("host","localhost").toString());
+    QString user(dbSettings.value("user","root").toString());
+    QString password(dbSettings.value("password","").toString());
+    QString database(dbSettings.value("database_name","dbApex").toString());
+    int port(dbSettings.value("port",3306).toInt());
 
     /*
     cout<<"DB_HOST: "<<host.toAscii().data()<<endl

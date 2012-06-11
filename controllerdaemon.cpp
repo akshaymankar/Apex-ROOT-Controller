@@ -22,6 +22,9 @@ void ControllerDaemon::run()
 {
     QString reqID;
 
+    //Settings
+    QSettings genSettings("gen.ini",QSettings::IniFormat);
+
     while(1)
     {
         //Blocking wait on Queue if it is empty
@@ -61,9 +64,6 @@ void ControllerDaemon::run()
             actual_params_result->next();
         }
 
-        //TODO: Do it with Configuration, i.e. QSettings
-        //QString ROOT_path("/home/swap/root/bin/root");
-
         //Get input script
         QString exe_file_query="select exefile,op_type from template "
                 "where template_id=(select template_id from output where output_id='"+reqID+"')";
@@ -85,7 +85,8 @@ void ControllerDaemon::run()
         /*
          * TODO: Get script base directory from settings
          */
-        QString exe_dir="/home/akshay/work/codes/faltu/root/";
+        //QString exe_dir="/home/akshay/work/codes/faltu/root/";
+        QString exe_dir(genSettings.value("exe_dir",".").toString());
         //QString exe_dir="/home/tifr-viit/Apex/";
         cout<<"Executing\n";
 
@@ -93,7 +94,9 @@ void ControllerDaemon::run()
         /*
          * TODO: Find op_file_path from Settings
          */
-        QString op_file_path="/var/www/Apex/output/dynamic/"+reqID+"/";
+
+        QString op_file_dir(genSettings.value("op_file_path","."));
+        QString op_file_path=op_file_dir+"/"+reqID+"/";
         if(!(new QDir("/"))->mkpath(op_file_path)){
             cout<<"Error Occured while creating Output directory..!!";
             continue;
